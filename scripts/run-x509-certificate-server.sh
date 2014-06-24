@@ -3,6 +3,7 @@
 # * run the X.509 certificate server
 # ****************************************************************************
 
+PATH=$JAVA_HOME/jre/bin:$PATH
 CLASSPATH=lib/X509CertificateServer-1.0.jar
 CLASSPATH=$CLASSPATH:lib/aduna-commons-collections-2.6.0.jar
 CLASSPATH=$CLASSPATH:lib/aduna-commons-concurrent-2.5.0.jar
@@ -16,7 +17,9 @@ CLASSPATH=$CLASSPATH:lib/aduna-commons-xml-2.5.0.jar
 CLASSPATH=$CLASSPATH:lib/AlbusHCNSupport-1.0.jar
 CLASSPATH=$CLASSPATH:lib/ant-optional-1.5.1.jar
 CLASSPATH=$CLASSPATH:lib/asm-3.1.jar
-CLASSPATH=$CLASSPATH:lib/bcprov-jdk16-140.jar
+CLASSPATH=$CLASSPATH:lib/bcpkix-jdk14-1.50.jar
+CLASSPATH=$CLASSPATH:lib/bcprov-jdk14-1.50.jar
+CLASSPATH=$CLASSPATH:lib/bcprov-jdk15on-1.50.jar
 CLASSPATH=$CLASSPATH:lib/BitTorrentSupport-1.0.jar
 CLASSPATH=$CLASSPATH:lib/cglib-2.2.jar
 CLASSPATH=$CLASSPATH:lib/commons-beanutils-1.4.jar

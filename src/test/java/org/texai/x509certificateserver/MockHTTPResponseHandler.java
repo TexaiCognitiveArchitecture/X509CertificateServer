@@ -99,6 +99,7 @@ public final class MockHTTPResponseHandler extends AbstractHTTPResponseHandler {
    * @param exceptionEvent the exception event
    */
   @Override
+  @SuppressWarnings("ThrowableResultIgnored")
   public void exceptionCaught(
           final ChannelHandlerContext channelHandlerContext,
           final ExceptionEvent exceptionEvent) {

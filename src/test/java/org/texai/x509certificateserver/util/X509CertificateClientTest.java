@@ -20,7 +20,10 @@
  */
 package org.texai.x509certificateserver.util;
 
+import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.cert.CertPath;
 import java.util.List;
@@ -77,7 +80,7 @@ public class X509CertificateClientTest {
     KeyPair keyPair = null;
     try {
       keyPair = X509Utils.generateRSAKeyPair3072();
-    } catch (Exception ex) {
+    } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
       fail(ex.getMessage());
     }
     assertNotNull(keyPair);
@@ -91,6 +94,6 @@ public class X509CertificateClientTest {
     assertNotNull(certificates);
     assertEquals(1, certificates.size());
     final X509Certificate x509Certificate = (X509Certificate) certificates.get(0);
-    assertEquals("CN=texai.org, O=Texai Certification Authority, UID=233bfdb2-9287-4b41-b304-eb121ea7c4de", x509Certificate.getIssuerDN().toString());
+    assertEquals("CN=texai.org, O=Texai Certification Authority, UID=ed6d6718-80de-4848-af43-fed7bdba3c36", x509Certificate.getIssuerDN().toString());
   }
 }

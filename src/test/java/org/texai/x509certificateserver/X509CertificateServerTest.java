@@ -20,14 +20,16 @@
  */
 package org.texai.x509certificateserver;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import org.texai.util.StringUtils;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
@@ -53,6 +55,7 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -67,10 +70,11 @@ import org.texai.network.netty.pipeline.SSLPipelineFactory;
 import org.texai.ssl.TexaiSSLContextFactory;
 import org.texai.util.Base64Coder;
 import org.texai.util.ByteUtils;
+import org.texai.util.StringUtils;
+import org.texai.util.TexaiException;
 import org.texai.x509.KeyStoreTestUtils;
 import org.texai.x509.X509SecurityInfo;
 import org.texai.x509.X509Utils;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -152,8 +156,14 @@ public class X509CertificateServerTest {
     assertEquals("{}", serverBootstrap.getOptions().toString());
     serverBootstrap.setPipelineFactory(channelPipelineFactory);
 
-    // bind and start to accept incoming connections
-    serverBootstrap.bind(new InetSocketAddress(SERVER_PORT));
+    try {
+      // bind and start to accept incoming connections
+      final SocketAddress socketAddress = new InetSocketAddress(InetAddress.getByName("localhost"), SERVER_PORT);
+      LOGGER.info("binding server to " + socketAddress);
+      serverBootstrap.bind(socketAddress);
+    } catch (UnknownHostException ex) {
+      throw new TexaiException(ex);
+    }
 
     // test chat server with mock clients
     //final int nbrThreads = 2;
@@ -173,16 +183,15 @@ public class X509CertificateServerTest {
 
     LOGGER.info("nbr of key pairs generated: " + nbrKeyPairsGenerated.toString());
     LOGGER.info("key pair duration milliseconds: " + keyPairGenerationDurationMillis.toString());
-    final long averageKeyPairGenerationMillis =
-            keyPairGenerationDurationMillis.get() / nbrKeyPairsGenerated.longValue();
+    final long averageKeyPairGenerationMillis
+            = keyPairGenerationDurationMillis.get() / nbrKeyPairsGenerated.longValue();
     LOGGER.info("average duration per key pair generated: " + averageKeyPairGenerationMillis);
     LOGGER.info("");
     LOGGER.info("nbr of certificates served: " + x509CertificateServer.getNbrCertificatesServed());
     LOGGER.info("certificate generation duration milliseconds: " + x509CertificateServer.getCertificateGenerationDurationMillis());
-    final long averageCertificateGenerationMillis =
-            x509CertificateServer.getCertificateGenerationDurationMillis() / (long) x509CertificateServer.getNbrCertificatesServed();
+    final long averageCertificateGenerationMillis
+            = x509CertificateServer.getCertificateGenerationDurationMillis() / (long) x509CertificateServer.getNbrCertificatesServed();
     LOGGER.info("average duration per certificate generated: " + averageCertificateGenerationMillis);
-
 
     final Timer timer = new Timer();
     timer.schedule(new ShutdownTimerTask(), 3000);
@@ -229,6 +238,7 @@ public class X509CertificateServerTest {
     }
 
     /** Tests the HTTP request and response messages. */
+    @SuppressWarnings({"ThrowableResultIgnored", "null"})
     private void mockHTTPClient() {
       final ClientBootstrap clientBootstrap = new ClientBootstrap(new NioClientSocketChannelFactory(
               Executors.newCachedThreadPool(),
@@ -256,8 +266,8 @@ public class X509CertificateServerTest {
       LOGGER.debug(Thread.currentThread().getName() + " connected");
 
       URI uri = null;
-      HttpRequest httpRequest = null;
-      String host = null;
+      HttpRequest httpRequest;
+      String host;
 
       // send the certificate request
       try {

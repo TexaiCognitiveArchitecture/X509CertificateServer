@@ -303,7 +303,7 @@ public class X509CertificateServer implements TexaiHTTPRequestHandler {
   static final class ShutdownRunnable implements Runnable {
 
     /** the internet gateway device - NAT */
-    private InternetGatewayDevice internetGatewayDevice;
+    private final InternetGatewayDevice internetGatewayDevice;
 
     /** Constructs a new ShutdownRunnable instance.
      *
@@ -336,6 +336,7 @@ public class X509CertificateServer implements TexaiHTTPRequestHandler {
    *
    * @param args the command-line arguments (unused)
    */
+  @SuppressWarnings("ThrowableResultIgnored")
   public static void main(final String[] args) {
     configureSSLServerPortForwarding();
     Logger.getLogger(PortUnificationChannelPipelineFactory.class).setLevel(Level.WARN);

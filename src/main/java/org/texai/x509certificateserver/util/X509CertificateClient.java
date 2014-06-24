@@ -82,6 +82,7 @@ public final class X509CertificateClient extends AbstractHTTPResponseHandler {
    * @param x509SecurityInfo the client's X.509 security info that allows it to communicate with the server
    * @return a certificate-signing X.509 certificate path
    */
+  @SuppressWarnings("ThrowableResultIgnored")
   public CertPath getIssuingCertificatePath(
           final PublicKey publicKey,
           final X509SecurityInfo x509SecurityInfo) {
@@ -116,7 +117,7 @@ public final class X509CertificateClient extends AbstractHTTPResponseHandler {
     LOGGER.debug(Thread.currentThread().getName() + " connected to " + socketAddress);
 
     URI uri = null;
-    HttpRequest httpRequest = null;
+    HttpRequest httpRequest;
 
     // send the certificate request
     try {
