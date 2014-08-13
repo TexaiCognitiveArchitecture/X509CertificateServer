@@ -26,20 +26,20 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.cert.CertPath;
-import java.util.List;
 import java.security.cert.X509Certificate;
+import java.util.List;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.texai.util.EnvironmentUtils;
+import org.texai.util.NetworkUtils;
 import org.texai.x509.KeyStoreTestUtils;
 import org.texai.x509.X509SecurityInfo;
 import org.texai.x509.X509Utils;
-import static org.junit.Assert.*;
-import org.texai.util.EnvironmentUtils;
-import org.texai.util.NetworkUtils;
 
 /**
  *
@@ -56,9 +56,6 @@ public class X509CertificateClientTest {
 
     static {
         System.setProperty("javax.net.debug", "all");
-    }
-
-    public X509CertificateClientTest() {
     }
 
     @BeforeClass
@@ -85,6 +82,7 @@ public class X509CertificateClientTest {
         LOGGER.info("getIssuingCertificate");
         final String host = EnvironmentUtils.certificateServerHost();
         if (!NetworkUtils.isHostAvailable(host, X509CertificateClient.SERVER_PORT)) {
+            LOGGER.info("bypassing test because the X.509 certificate server is not available");
             return;
         }
 
