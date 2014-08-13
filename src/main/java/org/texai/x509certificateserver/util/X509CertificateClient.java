@@ -65,7 +65,7 @@ public final class X509CertificateClient extends AbstractHTTPResponseHandler {
   /** the logger */
   private static final Logger LOGGER = Logger.getLogger(X509CertificateClient.class);
   /** the server port */
-  private static final int SERVER_PORT = 443;
+  public static final int SERVER_PORT = 443;
   /** the lock that allows the client to resume when the response is processed */
   private final Object clientResume_lock = new Object();
   /** the obtained certificate path */

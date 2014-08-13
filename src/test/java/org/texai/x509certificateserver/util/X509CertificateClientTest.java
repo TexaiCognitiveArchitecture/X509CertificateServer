@@ -38,6 +38,8 @@ import org.texai.x509.KeyStoreTestUtils;
 import org.texai.x509.X509SecurityInfo;
 import org.texai.x509.X509Utils;
 import static org.junit.Assert.*;
+import org.texai.util.EnvironmentUtils;
+import org.texai.util.NetworkUtils;
 
 /**
  *
@@ -45,55 +47,64 @@ import static org.junit.Assert.*;
  */
 public class X509CertificateClientTest {
 
-  /** the logger */
-  private static final Logger LOGGER = Logger.getLogger(X509CertificateClientTest.class);
-  // for SSL debugging
-  static {
-    System.setProperty("javax.net.debug", "all");
-  }
+    /**
+     * the logger
+     */
+    private static final Logger LOGGER = Logger.getLogger(X509CertificateClientTest.class);
 
-  public X509CertificateClientTest() {
-  }
+    // for SSL debugging
 
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-  }
-
-  @Before
-  public void setUp() {
-  }
-
-  @After
-  public void tearDown() {
-  }
-
-  /**
-   * Test of getIssuingCertificatePath method, of class X509CertificateClient.
-   */
-  @Test
-  public void testGetIssuingCertificate() {
-    LOGGER.info("getIssuingCertificate");
-    KeyPair keyPair = null;
-    try {
-      keyPair = X509Utils.generateRSAKeyPair3072();
-    } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
-      fail(ex.getMessage());
+    static {
+        System.setProperty("javax.net.debug", "all");
     }
-    assertNotNull(keyPair);
-    PublicKey publicKey = keyPair.getPublic();
-    X509CertificateClient instance = new X509CertificateClient();
-    final X509SecurityInfo x509SecurityInfo = KeyStoreTestUtils.getClientX509SecurityInfo();
-    CertPath result = instance.getIssuingCertificatePath(publicKey, x509SecurityInfo);
-    assertNotNull(result);
-    LOGGER.info(result);
-    final List<?> certificates = result.getCertificates();
-    assertNotNull(certificates);
-    assertEquals(1, certificates.size());
-    final X509Certificate x509Certificate = (X509Certificate) certificates.get(0);
-    assertEquals("CN=texai.org, O=Texai Certification Authority, UID=ed6d6718-80de-4848-af43-fed7bdba3c36", x509Certificate.getIssuerDN().toString());
-  }
+
+    public X509CertificateClientTest() {
+    }
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+    }
+
+    @Before
+    public void setUp() {
+    }
+
+    @After
+    public void tearDown() {
+    }
+
+    /**
+     * Test of getIssuingCertificatePath method, of class X509CertificateClient.
+     */
+    @Test
+    public void testGetIssuingCertificate() {
+        LOGGER.info("getIssuingCertificate");
+        final String host = EnvironmentUtils.certificateServerHost();
+        if (!NetworkUtils.isHostAvailable(host, X509CertificateClient.SERVER_PORT)) {
+            return;
+        }
+
+        KeyPair keyPair = null;
+        try {
+            keyPair = X509Utils.generateRSAKeyPair3072();
+        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
+            fail(ex.getMessage());
+        }
+        assertNotNull(keyPair);
+        PublicKey publicKey = keyPair.getPublic();
+        X509CertificateClient instance = new X509CertificateClient();
+        final X509SecurityInfo x509SecurityInfo = KeyStoreTestUtils.getClientX509SecurityInfo();
+        CertPath result = instance.getIssuingCertificatePath(publicKey, x509SecurityInfo);
+        assertNotNull(result);
+        LOGGER.info(result);
+        final List<?> certificates = result.getCertificates();
+        assertNotNull(certificates);
+        assertEquals(1, certificates.size());
+        final X509Certificate x509Certificate = (X509Certificate) certificates.get(0);
+        assertEquals("CN=texai.org, O=Texai Certification Authority, UID=ed6d6718-80de-4848-af43-fed7bdba3c36", x509Certificate.getIssuerDN().toString());
+    }
 }
